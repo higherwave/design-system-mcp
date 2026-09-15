@@ -1,0 +1,14 @@
+{
+  "id": "smoke-test-registration",
+  "tags": [
+    "test"
+  ],
+  "pageType": "test",
+  "componentsUsed": [],
+  "sourceRepo": "higherwave/design-system-mcp",
+  "sourcePath": "n/a",
+  "sourceUrl": "https://github.com/higherwave/design-system-mcp",
+  "description": "End-to-end smoke test of register_pattern PR creation. Safe to close/delete this PR and its file.",
+  "liveUrl": null,
+  "snippet": null
+}
