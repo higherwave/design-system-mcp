@@ -1,0 +1,26 @@
+{
+  "allowed": [
+    { "name": "Button", "import": "@carbon/react", "notes": "Use the kind prop (primary/secondary/tertiary/danger/ghost) instead of custom button styles." },
+    { "name": "Header", "import": "@carbon/react" },
+    { "name": "HeaderName", "import": "@carbon/react" },
+    { "name": "HeaderNavigation", "import": "@carbon/react" },
+    { "name": "Content", "import": "@carbon/react" },
+    { "name": "Grid", "import": "@carbon/react" },
+    { "name": "Column", "import": "@carbon/react" },
+    { "name": "Tile", "import": "@carbon/react", "notes": "Also ClickableTile / ExpandableTile for interactive variants." },
+    { "name": "TextInput", "import": "@carbon/react", "notes": "Use instead of a raw <input>." },
+    { "name": "TextArea", "import": "@carbon/react", "notes": "Use instead of a raw <textarea>." },
+    { "name": "Select", "import": "@carbon/react", "notes": "Use instead of a raw <select>." },
+    { "name": "Dropdown", "import": "@carbon/react", "notes": "Use for single-select menus over a raw <select> when Carbon's styled list behavior is wanted." },
+    { "name": "Checkbox", "import": "@carbon/react" },
+    { "name": "RadioButton", "import": "@carbon/react" },
+    { "name": "DataTable", "import": "@carbon/react", "notes": "Use for tabular data instead of a hand-rolled <table>." },
+    { "name": "Modal", "import": "@carbon/react" },
+    { "name": "Tag", "import": "@carbon/react" },
+    { "name": "Tabs", "import": "@carbon/react" },
+    { "name": "Breadcrumb", "import": "@carbon/react" },
+    { "name": "InlineNotification", "import": "@carbon/react", "notes": "Use for inline status/error messaging instead of custom banners." },
+    { "name": "Loading", "import": "@carbon/react" }
+  ],
+  "disallowed_raw_elements": ["button", "input", "select", "textarea", "table"]
+}

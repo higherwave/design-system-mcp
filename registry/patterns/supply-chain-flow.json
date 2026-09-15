@@ -1,0 +1,12 @@
+{
+  "id": "supply-chain-flow",
+  "tags": ["legacy", "pre-carbon", "static-site", "flow-diagram", "tabs"],
+  "pageType": "landing",
+  "componentsUsed": [],
+  "sourceRepo": "higherwave/de",
+  "sourcePath": "index.html",
+  "sourceUrl": "https://github.com/higherwave/de/blob/main/index.html",
+  "liveUrl": null,
+  "description": "Pre-Carbon static HTML site (Claude Design export) with a tabbed layout (Customer journey / Order flow / Design Patterns / Sitemap / Design-to-Code). Kept as a structural and content reference only. Its markup uses raw <button> elements and hardcoded hex colors and is NOT Carbon-compliant — validate_page will flag both. Do not copy its markup or styling directly; use it only for layout/content inspiration, and rebuild any reused structure with Carbon components and tokens.",
+  "snippet": null
+}

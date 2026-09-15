@@ -1,0 +1,12 @@
+{
+  "id": "carbon-smoke-test",
+  "tags": ["landing", "smoke-test", "carbon"],
+  "pageType": "landing",
+  "componentsUsed": ["Header", "HeaderName", "Content", "Grid", "Column", "Tile", "Button"],
+  "sourceRepo": "higherwave/mcp",
+  "sourcePath": "src/App.tsx",
+  "sourceUrl": "https://github.com/higherwave/mcp/blob/main/src/App.tsx",
+  "liveUrl": null,
+  "description": "Minimal Carbon page: Header with HeaderName, Content wrapping a Grid/Column/Tile containing a heading, paragraph, and primary Button. Canonical starting pattern for any new Carbon page in this pipeline.",
+  "snippet": "<Header aria-label=\"MCP Design Pipeline\">\n  <HeaderName href=\"/\" prefix=\"Carbon\">\n    MCP Pipeline\n  </HeaderName>\n</Header>\n<Content>\n  <Grid className=\"landing-page\">\n    <Column lg={16} md={8} sm={4}>\n      <Tile>\n        <h1>Carbon Design System smoke test</h1>\n        <p>This confirms Carbon components and styles are wired up correctly for the design-to-code pipeline.</p>\n        <Button>It works</Button>\n      </Tile>\n    </Column>\n  </Grid>\n</Content>"
+}
