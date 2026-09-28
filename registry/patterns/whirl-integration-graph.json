@@ -1,0 +1,21 @@
+{
+  "id": "whirl-integration-graph",
+  "tags": [
+    "dependency-graph",
+    "svg-diagram",
+    "lane-layout",
+    "clickable-node",
+    "detail-rail"
+  ],
+  "pageType": "app-view",
+  "componentsUsed": [
+    "Button",
+    "Tag"
+  ],
+  "sourceRepo": "higherwave/apptest1",
+  "sourcePath": "src/components/views/IntegrationGraph.jsx",
+  "sourceUrl": "https://github.com/higherwave/apptest1/blob/main/src/components/views/IntegrationGraph.jsx",
+  "liveUrl": null,
+  "description": "Lane-based system dependency diagram: SVG edges connecting positioned Carbon Button-based nodes across four system lanes, with a selected-node detail rail showing impact and evidence.",
+  "snippet": null
+}
