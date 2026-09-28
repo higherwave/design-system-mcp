@@ -1,0 +1,29 @@
+{
+  "id": "whirl-knowledge-base",
+  "tags": [
+    "breadcrumb",
+    "audience-lens",
+    "tabs",
+    "fact-list",
+    "provenance-tag",
+    "detail-page"
+  ],
+  "pageType": "app-view",
+  "componentsUsed": [
+    "Breadcrumb",
+    "BreadcrumbItem",
+    "Tabs",
+    "TabList",
+    "Tab",
+    "TextInput",
+    "Tile",
+    "Button",
+    "Tag"
+  ],
+  "sourceRepo": "higherwave/apptest1",
+  "sourcePath": "src/components/views/KnowledgeBase.jsx",
+  "sourceUrl": "https://github.com/higherwave/apptest1/blob/main/src/components/views/KnowledgeBase.jsx",
+  "liveUrl": null,
+  "description": "Business-process knowledge page: breadcrumb + scoped ask input, an audience-lens Tabs filter over a numbered fact list with per-fact provenance tags, and confirm/correct actions on facts needing verification.",
+  "snippet": null
+}
