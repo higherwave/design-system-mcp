@@ -1,0 +1,29 @@
+{
+  "id": "whirl-change-workspace",
+  "tags": [
+    "app-shell",
+    "sidebar-nav",
+    "pipeline-stages",
+    "data-table",
+    "provenance-tag"
+  ],
+  "pageType": "app-view",
+  "componentsUsed": [
+    "Button",
+    "Tile",
+    "DataTable",
+    "Table",
+    "TableHead",
+    "TableRow",
+    "TableHeader",
+    "TableBody",
+    "TableCell",
+    "Tag"
+  ],
+  "sourceRepo": "higherwave/apptest1",
+  "sourcePath": "src/components/views/ChangeWorkspace.jsx",
+  "sourceUrl": "https://github.com/higherwave/apptest1/blob/main/src/components/views/ChangeWorkspace.jsx",
+  "liveUrl": null,
+  "description": "Change-request workspace: pipeline stage strip, a human-checkpoint banner gating an agent pipeline, a Carbon DataTable design spec with provenance tags per row, and an entities/connectors detail rail.",
+  "snippet": null
+}
