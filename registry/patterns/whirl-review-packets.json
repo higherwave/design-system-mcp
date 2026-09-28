@@ -1,0 +1,24 @@
+{
+  "id": "whirl-review-packets",
+  "tags": [
+    "approval-gate",
+    "diff-view",
+    "tabs",
+    "audit-trail",
+    "handoff"
+  ],
+  "pageType": "app-view",
+  "componentsUsed": [
+    "Button",
+    "Tabs",
+    "TabList",
+    "Tab",
+    "Tag"
+  ],
+  "sourceRepo": "higherwave/apptest1",
+  "sourcePath": "src/components/views/ReviewPackets.jsx",
+  "sourceUrl": "https://github.com/higherwave/apptest1/blob/main/src/components/views/ReviewPackets.jsx",
+  "liveUrl": null,
+  "description": "Change-packet review and approval page: a status gate blocking approval on unverified inferred rules, per-system config diffs with add/remove line coloring and evidence, and a handoff/audit-trail rail.",
+  "snippet": null
+}
