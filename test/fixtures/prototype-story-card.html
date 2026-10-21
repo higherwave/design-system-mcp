@@ -1,0 +1,9 @@
+<!-- Excerpt of the Signal Flow prototype's board card (Boards.dc.html), kept as a "must fail" fixture. -->
+<sc-for list="{{ col.items }}" as="item" hint-placeholder-count="4">
+  <div draggable="true" onClick="{{ item.onClick }}" style="{{ item.cardStyle }}">
+    <div style="{{ item.tagStyle }}">{{ item.tag }}</div>
+    <div title="{{ item.name }}" style="font-size: 16px; font-weight: 500; color: #181d26; line-height: 1.35; margin-top: 8px;">{{ item.name }}</div>
+    <div style="height: 4px; background: #e0e2e6; border-radius: 9999px;"><div style="{{ item.progressStyle }}"></div></div>
+  </div>
+</sc-for>
+<button style-hover="background: #f2f3f5;" style="padding: 12px 22px; border-radius: 12px; background: #181d26;">Move</button>

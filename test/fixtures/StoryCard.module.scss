@@ -1,0 +1,29 @@
+@use 'tokens' as tokens;
+
+// Card edge and selection ring come from the status tokens; nothing here is a literal colour or size.
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--at-space-xs);
+  padding: var(--at-space-md);
+  border: 1px solid var(--at-hairline);
+  border-radius: var(--at-radius-md);
+  background: var(--at-canvas);
+
+  &[data-status='todo'] { border-left: var(--at-space-xxs) solid var(--at-status-todo); }
+  &[data-status='in_progress'] { border-left: var(--at-space-xxs) solid var(--at-status-progress); }
+  &[data-status='in_review'] { border-left: var(--at-space-xxs) solid var(--at-status-review); }
+  &[data-status='done'] { border-left: var(--at-space-xxs) solid var(--at-status-done); }
+
+  &[data-selected='true'] { box-shadow: 0 0 0 var(--at-space-xxs) var(--at-status-todo-strong); }
+}
+
+.title {
+  @include tokens.role('title-sm');
+  color: var(--at-ink);
+}
+
+.theme {
+  @include tokens.role('body-md');
+  color: var(--at-text-tertiary);
+}

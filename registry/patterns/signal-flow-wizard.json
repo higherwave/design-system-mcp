@@ -1,0 +1,30 @@
+{
+  "id": "signal-flow-wizard",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "wizard",
+    "form",
+    "stepper",
+    "autosave"
+  ],
+  "pageType": "wizard",
+  "componentsUsed": [
+    "ProgressIndicator",
+    "ProgressStep",
+    "TextInput",
+    "TextArea",
+    "Select",
+    "Dropdown",
+    "DatePicker",
+    "DatePickerInput",
+    "Checkbox",
+    "Button"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Research.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Research.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Three-step new-project wizard: Basics and template, Test plan (what, job to be done when/want/so, outcomes, methods), Participants (name, role, email, session date). Steps validate on Next; the email field validates format. Autosave each step as a draft project instead of discarding on Cancel.",
+  "snippet": null
+}

@@ -75,7 +75,8 @@ const handler = createMcpHandler(
         inputSchema: z.object({ code: z.string() }),
       },
       async ({ code }) => {
-        const result = validatePage(code)
+        const components = loadComponents() as { allowed: { name: string }[] }
+        const result = validatePage(code, { allowedComponents: components.allowed.map((c) => c.name) })
         return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
       },
     )

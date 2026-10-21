@@ -1,0 +1,25 @@
+{
+  "id": "signal-flow-project-cards",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "cards",
+    "list",
+    "status-badge"
+  ],
+  "pageType": "list",
+  "componentsUsed": [
+    "ClickableTile",
+    "Tag",
+    "OverflowMenu",
+    "OverflowMenuItem",
+    "Button",
+    "Modal"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Research.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Research.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Research Projects home: a grid of pastel project cards (colour from a --at-tint-* token stored on the project), each showing sessions, themes and high-priority counts, and a derived Draft or Analyzed Tag. The whole card is one action (ClickableTile); the per-card menu (change colour, remove) is an OverflowMenu. Remove asks for confirmation in a Modal and is a hard delete.",
+  "snippet": null
+}

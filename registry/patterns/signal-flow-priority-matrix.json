@@ -1,0 +1,24 @@
+{
+  "id": "signal-flow-priority-matrix",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "matrix",
+    "prioritisation",
+    "drag-drop",
+    "quick-wins"
+  ],
+  "pageType": "detail",
+  "componentsUsed": [
+    "Tag",
+    "Button",
+    "Select",
+    "Tile"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Research.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Research.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Priorities: a 3 x 3 importance by effort grid with zones (Quick wins, Major projects, Fill-ins, Reconsider). Themes are dragged between cells; the detail side shows the suggested and edited values and a Reset. Provide Select controls for importance and effort in the side panel so the matrix is usable without dragging. Edits are PATCH /themes/:id (stored as overrides); Reset and Reset all delete the overrides.",
+  "snippet": null
+}

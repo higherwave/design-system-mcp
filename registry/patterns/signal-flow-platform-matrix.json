@@ -1,0 +1,24 @@
+{
+  "id": "signal-flow-platform-matrix",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "insights",
+    "matrix",
+    "data-table",
+    "cross-project"
+  ],
+  "pageType": "dashboard",
+  "componentsUsed": [
+    "DataTable",
+    "Tabs",
+    "Tag",
+    "Tile"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Platform Insights.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Platform%20Insights.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Platform Insights: Platform Themes (a project-by-theme matrix with quotes for the selected cell), Case Studies, Recommendations. Counts such as 'N of 13 participants across M of 3 projects' come from the insights stats views (distinct people per project), never from summing per-theme counts. Onboarding is a placeholder tab.",
+  "snippet": null
+}

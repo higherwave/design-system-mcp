@@ -1,0 +1,26 @@
+{
+  "id": "signal-flow-agent-step-card",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "agent",
+    "review",
+    "approval",
+    "reasoning"
+  ],
+  "pageType": "detail",
+  "componentsUsed": [
+    "Tag",
+    "Button",
+    "TextArea",
+    "Modal",
+    "Loading",
+    "InlineNotification"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Spec Writer.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Spec%20Writer.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. One reviewed step of the requirements writer (8 fixed steps, in order). States: pending, thinking, review, approved. In review the reasoning is editable; editing marks the step as needing re-approval. Shows Evidence (theme Tags), 'Considered and rejected' alternatives, Approve, and 'Redo with instructions' (Modal with a TextArea). Brief output builds as steps 1 to 3 are approved. Publish is enabled only when every step is approved (the API returns 409 otherwise).",
+  "snippet": null
+}

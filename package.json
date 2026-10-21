@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts",
+    "check:tokens": "node scripts/check-tokens.mjs"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",

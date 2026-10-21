@@ -1,0 +1,29 @@
+{
+  "id": "signal-flow-story-board",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "kanban",
+    "board",
+    "drag-drop",
+    "stories",
+    "filters"
+  ],
+  "pageType": "board",
+  "componentsUsed": [
+    "ClickableTile",
+    "Tag",
+    "ProgressBar",
+    "Select",
+    "Search",
+    "Dropdown",
+    "InlineNotification",
+    "Button"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Boards.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Boards.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Four-column board (To Do, In Progress, In Review, Done) with a detail panel, a theme filter (Tag chips), a priority filter and search. Cards are ClickableTiles showing priority, title, theme and a ProgressBar of criteria met. Drag between columns is a custom BoardColumn using HTML5 drag events; the prototype has no keyboard alternative, so the detail panel MUST include a 'Move to' Select that calls POST /stories/:id/move. Undo reverses the last move by the same person. The snippet is the hand-built reference card that passes validate_page.",
+  "snippet": "import { ClickableTile, ProgressBar, Tag } from '@carbon/react'\nimport styles from './StoryCard.module.scss'\n\nexport type StoryCardProps = {\n  title: string\n  themeLabel: string\n  priority: 'low' | 'medium' | 'high'\n  status: 'todo' | 'in_progress' | 'in_review' | 'done'\n  criteriaMet: number\n  criteriaTotal: number\n  selected: boolean\n  onSelect: () => void\n}\n\n// Presentational only: data and handlers come from the container.\nexport function StoryCard(props: StoryCardProps) {\n  const { title, themeLabel, priority, status, criteriaMet, criteriaTotal, selected, onSelect } = props\n  return (\n    <ClickableTile\n      className={styles.card}\n      data-status={status}\n      data-selected={selected}\n      onClick={onSelect}\n    >\n      <Tag size=\"sm\" type={priority === 'high' ? 'red' : 'gray'}>\n        {status === 'done' ? 'Done' : priority}\n      </Tag>\n      <p className={styles.title}>{title}</p>\n      <p className={styles.theme}>{themeLabel}</p>\n      {criteriaTotal > 0 && (\n        <ProgressBar\n          label=\"Criteria met\"\n          hideLabel\n          size=\"small\"\n          value={criteriaMet}\n          max={criteriaTotal}\n          helperText={`${criteriaMet} of ${criteriaTotal} criteria met`}\n        />\n      )}\n    </ClickableTile>\n  )\n}\n"
+}

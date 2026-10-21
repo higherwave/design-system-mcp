@@ -1,26 +1,178 @@
 {
   "allowed": [
-    { "name": "Button", "import": "@carbon/react", "notes": "Use the kind prop (primary/secondary/tertiary/danger/ghost) instead of custom button styles." },
-    { "name": "Header", "import": "@carbon/react" },
-    { "name": "HeaderName", "import": "@carbon/react" },
-    { "name": "HeaderNavigation", "import": "@carbon/react" },
-    { "name": "Content", "import": "@carbon/react" },
-    { "name": "Grid", "import": "@carbon/react" },
-    { "name": "Column", "import": "@carbon/react" },
-    { "name": "Tile", "import": "@carbon/react", "notes": "Also ClickableTile / ExpandableTile for interactive variants." },
-    { "name": "TextInput", "import": "@carbon/react", "notes": "Use instead of a raw <input>." },
-    { "name": "TextArea", "import": "@carbon/react", "notes": "Use instead of a raw <textarea>." },
-    { "name": "Select", "import": "@carbon/react", "notes": "Use instead of a raw <select>." },
-    { "name": "Dropdown", "import": "@carbon/react", "notes": "Use for single-select menus over a raw <select> when Carbon's styled list behavior is wanted." },
-    { "name": "Checkbox", "import": "@carbon/react" },
-    { "name": "RadioButton", "import": "@carbon/react" },
-    { "name": "DataTable", "import": "@carbon/react", "notes": "Use for tabular data instead of a hand-rolled <table>." },
-    { "name": "Modal", "import": "@carbon/react" },
-    { "name": "Tag", "import": "@carbon/react" },
-    { "name": "Tabs", "import": "@carbon/react" },
-    { "name": "Breadcrumb", "import": "@carbon/react" },
-    { "name": "InlineNotification", "import": "@carbon/react", "notes": "Use for inline status/error messaging instead of custom banners." },
-    { "name": "Loading", "import": "@carbon/react" }
+    {
+      "name": "Button",
+      "import": "@carbon/react",
+      "notes": "Use the kind prop (primary/secondary/tertiary/danger/ghost) instead of custom button styles."
+    },
+    {
+      "name": "Header",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "HeaderName",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "HeaderNavigation",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Content",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Grid",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Column",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Tile",
+      "import": "@carbon/react",
+      "notes": "Also ClickableTile / ExpandableTile for interactive variants."
+    },
+    {
+      "name": "TextInput",
+      "import": "@carbon/react",
+      "notes": "Use instead of a raw <input>."
+    },
+    {
+      "name": "TextArea",
+      "import": "@carbon/react",
+      "notes": "Use instead of a raw <textarea>."
+    },
+    {
+      "name": "Select",
+      "import": "@carbon/react",
+      "notes": "Use instead of a raw <select>."
+    },
+    {
+      "name": "Dropdown",
+      "import": "@carbon/react",
+      "notes": "Use for single-select menus over a raw <select> when Carbon's styled list behavior is wanted."
+    },
+    {
+      "name": "Checkbox",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "RadioButton",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "DataTable",
+      "import": "@carbon/react",
+      "notes": "Use for tabular data instead of a hand-rolled <table>."
+    },
+    {
+      "name": "Modal",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Tag",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Tabs",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Breadcrumb",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "InlineNotification",
+      "import": "@carbon/react",
+      "notes": "Use for inline status/error messaging instead of custom banners."
+    },
+    {
+      "name": "Loading",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "ProgressIndicator",
+      "import": "@carbon/react",
+      "notes": "Wizard stepper (Basics, Test plan, Participants). Use with ProgressStep."
+    },
+    {
+      "name": "ProgressStep",
+      "import": "@carbon/react",
+      "notes": "A step inside ProgressIndicator."
+    },
+    {
+      "name": "ProgressBar",
+      "import": "@carbon/react",
+      "notes": "Criteria progress on a story card and detail panel. Pass value and max; never draw a bar from a styled div."
+    },
+    {
+      "name": "FileUploader",
+      "import": "@carbon/react",
+      "notes": "Transcript upload (.vtt, .txt, .sbv, .srt). Use FileUploaderDropContainer for the drop zone."
+    },
+    {
+      "name": "FileUploaderDropContainer",
+      "import": "@carbon/react",
+      "notes": "Drag-and-drop target inside FileUploader."
+    },
+    {
+      "name": "DatePicker",
+      "import": "@carbon/react",
+      "notes": "Session date. Use with DatePickerInput."
+    },
+    {
+      "name": "DatePickerInput",
+      "import": "@carbon/react",
+      "notes": "Input inside DatePicker; replaces a raw date input."
+    },
+    {
+      "name": "OverflowMenu",
+      "import": "@carbon/react",
+      "notes": "Per-card menus (change colour, remove). Use OverflowMenuItem for entries; use isDelete for destructive items."
+    },
+    {
+      "name": "OverflowMenuItem",
+      "import": "@carbon/react",
+      "notes": "An entry in OverflowMenu."
+    },
+    {
+      "name": "SideNav",
+      "import": "@carbon/react",
+      "notes": "Project step menu and the left rail. Use SideNavItems and SideNavLink; mark the current step with isActive."
+    },
+    {
+      "name": "SideNavItems",
+      "import": "@carbon/react",
+      "notes": "Container for SideNavLink entries."
+    },
+    {
+      "name": "SideNavLink",
+      "import": "@carbon/react",
+      "notes": "A navigation entry; pass isActive, and aria-disabled for locked steps."
+    },
+    {
+      "name": "ClickableTile",
+      "import": "@carbon/react",
+      "notes": "A whole card that is one action (project cards, story cards). Use instead of a div with onClick, which keyboard users cannot reach."
+    },
+    {
+      "name": "Search",
+      "import": "@carbon/react",
+      "notes": "Story and project search fields; replaces a raw search input."
+    },
+    {
+      "name": "ContentSwitcher",
+      "import": "@carbon/react",
+      "notes": "Small mutually exclusive view toggles, for example the Insights tabs when Tabs is too heavy."
+    }
   ],
-  "disallowed_raw_elements": ["button", "input", "select", "textarea", "table"]
+  "disallowed_raw_elements": [
+    "button",
+    "input",
+    "select",
+    "textarea",
+    "table"
+  ]
 }

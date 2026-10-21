@@ -1,0 +1,27 @@
+{
+  "id": "signal-flow-transcripts",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "upload",
+    "transcripts",
+    "file-upload",
+    "status"
+  ],
+  "pageType": "detail",
+  "componentsUsed": [
+    "FileUploader",
+    "FileUploaderDropContainer",
+    "TextArea",
+    "Tag",
+    "Button",
+    "InlineNotification",
+    "Loading"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "Research.dc.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/Research.dc.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. Transcripts screen: drop or paste .vtt, .txt, .sbv or .srt text; per-platform export help (Zoom, Meet, Teams); a primary Save and analyze button that is labelled Save when nothing changed. needs_analysis comes from the API (transcript hash differs from the last run). While analysing, show the 5-step progress list.",
+  "snippet": null
+}

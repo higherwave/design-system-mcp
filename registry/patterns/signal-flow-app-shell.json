@@ -1,0 +1,26 @@
+{
+  "id": "signal-flow-app-shell",
+  "tags": [
+    "signal-flow",
+    "prototype-reference",
+    "app-shell",
+    "navigation",
+    "side-nav",
+    "lock-state"
+  ],
+  "pageType": "app-shell",
+  "componentsUsed": [
+    "Header",
+    "SideNav",
+    "SideNavItems",
+    "SideNavLink",
+    "Breadcrumb",
+    "Content"
+  ],
+  "sourceRepo": "thehigherwave.com/prototypes/productivity/research-driven-process",
+  "sourcePath": "index.html",
+  "sourceUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/index.html",
+  "liveUrl": "https://www.thehigherwave.com/prototypes/productivity/research-driven-process/",
+  "description": "Design reference from the Signal Flow prototype (Claude Design export, inline styles). The React version is not built yet, so rebuild this structure with the listed Carbon components and --at-* tokens; do not copy the prototype markup, which fails validate_page. 88px left rail (Research Projects, Platform Insights) plus a project header and a step menu grouped Plan / Analyze / Deliver (8 numbered steps). A step is locked until its prerequisite exists; render a locked step as a SideNavLink with aria-disabled and a visible hint (for example 'Save the test plan first'). Enabled flags and hints come from one endpoint (GET /projects/:id/stage), never from the component. Routes: /projects, /projects/:id/{plan|tasks|transcripts|themes|journey|prio|requirements|stories}, /insights/{themes|case-studies|onboarding}.",
+  "snippet": null
+}
