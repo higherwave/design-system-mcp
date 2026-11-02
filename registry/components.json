@@ -243,6 +243,11 @@
       "name": "Switch",
       "import": "@carbon/react",
       "notes": "The options inside ContentSwitcher."
+    },
+    {
+      "name": "ComboBox",
+      "import": "@carbon/react",
+      "notes": "A searchable single choice from a longer list (about ten or more): type to filter, pick one. Use Dropdown for short lists."
     }
   ],
   "disallowed_raw_elements": [
