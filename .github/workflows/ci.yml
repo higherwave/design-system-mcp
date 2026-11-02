@@ -1,0 +1,34 @@
+# Every push to main and every pull request: the registry and validator tests, a type check, a production build, and a check that
+# the token registry still matches the app's theme.scss.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
+      # The app whose theme.scss the registry describes. A fork sets the repository variable APP_REPO (owner/name) to its own app.
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.APP_REPO || 'higherwave/apptest1' }}
+          path: app
+      - name: Token registry matches the app's theme.scss
+        run: node scripts/check-tokens.mjs app/src/theme.scss registry/tokens.json
