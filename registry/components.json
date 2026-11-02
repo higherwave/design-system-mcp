@@ -166,6 +166,16 @@
       "name": "ContentSwitcher",
       "import": "@carbon/react",
       "notes": "Small mutually exclusive view toggles, for example the Insights tabs when Tabs is too heavy."
+    },
+    {
+      "name": "SkeletonText",
+      "import": "@carbon/react",
+      "notes": "Placeholder lines while text loads. Prefer it to a spinner when the layout is known."
+    },
+    {
+      "name": "SkeletonPlaceholder",
+      "import": "@carbon/react",
+      "notes": "Placeholder block for an image or card while it loads."
     }
   ],
   "disallowed_raw_elements": [

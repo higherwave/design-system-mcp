@@ -104,3 +104,14 @@ test('GATE: the prototype story card fails, and the hand-built reference passes 
   assert.deepEqual(tsx, { pass: true, violations: [] })
   assert.deepEqual(scss, { pass: true, violations: [] })
 })
+
+test('role() must name a type role the mixin knows (only when the roles are supplied)', () => {
+  const roles = ['body-md', 'meta']
+  const check = (code: string) => validatePage(code, { typeRoles: roles }).violations.map((v) => v.rule)
+  assert.deepEqual(check(`.a { @include tokens.role('body-md'); }\n.b { @include role("meta"); }`), [])
+  assert.deepEqual(check(`.a { @include tokens.role('body-xl'); }`), ['type-role-unknown'])
+  const r = validatePage(`.a { color: red; }\n.b { @include tokens.role('nope'); }`, { typeRoles: roles })
+  assert.deepEqual(r.violations.map((v) => [v.rule, v.lines]), [['type-role-unknown', [2]]])
+  assert.match(r.violations[0].message, /'nope'.*body-md, meta/)
+  assert.deepEqual(rules(`.a { @include tokens.role('nope'); }`), [], 'without the roles the check is skipped')
+})

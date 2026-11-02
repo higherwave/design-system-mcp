@@ -52,7 +52,12 @@ const linesOf = (hits: { line: number }[]) => [...new Set(hits.map((h) => h.line
 export type ValidateOptions = {
   /** Component names allowed from '@carbon/react' (registry/components.json). Omit to skip the import check. */
   allowedComponents?: string[]
+  /** Type role names (registry/tokens.json airtable.type.roles). Omit to skip the role() check. */
+  typeRoles?: string[]
 }
+
+// role('body-md') or tokens.role("meta") in Sass. A name the mixin does not know compiles to nothing or fails only in the Sass build.
+const TYPE_ROLE_RE = /\brole\(\s*(['"])([^'"]*)\1\s*\)/g
 
 // Named imports from '@carbon/react'. Limit: namespace and default imports are not inspected.
 const CARBON_IMPORT_RE = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"]@carbon\/react['"]/g
@@ -142,6 +147,18 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
       violations.push({
         rule: 'component-not-in-allowlist',
         message: `Imported ${[...new Set(unknown.map((u) => u.text))].join(', ')} from '@carbon/react', which ${unknown.length > 1 ? 'are' : 'is'} not in the allowed list. Use a component from list_components, or ask for it to be added to registry/components.json.`,
+        lines: linesOf(unknown),
+      })
+    }
+  }
+
+  if (options.typeRoles) {
+    const known = new Set(options.typeRoles)
+    const unknown = matchesWithLines(code, TYPE_ROLE_RE).filter((m) => !known.has(m.text.replace(TYPE_ROLE_RE, '$2')))
+    if (unknown.length) {
+      violations.push({
+        rule: 'type-role-unknown',
+        message: `role() asks for ${[...new Set(unknown.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')}, which is not a type role. The roles are ${options.typeRoles.join(', ')} (list_design_tokens, airtable.type.roles).`,
         lines: linesOf(unknown),
       })
     }

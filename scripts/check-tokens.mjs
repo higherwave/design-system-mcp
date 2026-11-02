@@ -2,7 +2,7 @@
 //   npm run check:tokens [path/to/theme.scss] [path/to/tokens.json]
 // Checks that every --at-* token named in the registry exists in theme.scss, and that every exact
 // entry in airtable.fromPrototype maps a hex to a token whose value is that hex (aliases such as
-// var(--at-x) are followed). Exits 1 on a mismatch.
+// var(--at-x) are followed). Every colour token theme.scss defines must also be in the registry. Exits 1 on a mismatch.
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
@@ -44,6 +44,7 @@ const hexTokens = [...defs.keys()].filter((t) => /^#/.test(resolveValue(t) ?? ''
 const covered = new Set([...named, ...registry.fromPrototype.map.map((e) => e.token)])
 const undocumented = hexTokens.filter((t) => !covered.has(t))
 
+// A colour token the app defines but the registry never mentions would be invisible to everyone who builds from the registry.
+if (undocumented.length) problems.push(...undocumented.map((t) => `${t} is defined in theme.scss but is not in the registry: add it to airtable.color with its use`))
 if (problems.length) { console.error('Token registry is out of step with theme.scss:\n' + problems.map((p) => '  ' + p).join('\n')); process.exit(1) }
 console.log(`Token registry matches ${themePath.split('/').slice(-3).join('/')}: ${named.size} tokens named, ${registry.fromPrototype.map.length} prototype hex values mapped.`)
-if (undocumented.length) console.log(`Note: ${undocumented.length} colour token(s) in theme.scss are not in the registry: ${undocumented.join(', ')}`)

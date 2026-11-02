@@ -76,7 +76,8 @@ const handler = createMcpHandler(
       },
       async ({ code }) => {
         const components = loadComponents() as { allowed: { name: string }[] }
-        const result = validatePage(code, { allowedComponents: components.allowed.map((c) => c.name) })
+        const tokens = loadTokens() as { airtable: { type: { roles: { token: string }[] } } }
+        const result = validatePage(code, { allowedComponents: components.allowed.map((c) => c.name), typeRoles: tokens.airtable.type.roles.map((r) => r.token) })
         return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
       },
     )
