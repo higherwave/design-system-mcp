@@ -54,13 +54,57 @@ export type ValidateOptions = {
   allowedComponents?: string[]
   /** Type role names (registry/tokens.json airtable.type.roles). Omit to skip the role() check. */
   typeRoles?: string[]
+  /** The component library's package, for the import rules. Default '@carbon/react'; another design system names its own. */
+  importFrom?: string
 }
 
 // role('body-md') or tokens.role("meta") in Sass. A name the mixin does not know compiles to nothing or fails only in the Sass build.
 const TYPE_ROLE_RE = /\brole\(\s*(['"])([^'"]*)\1\s*\)/g
 
-// Named imports from '@carbon/react'. Limit: namespace and default imports are not inspected.
-const CARBON_IMPORT_RE = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"]@carbon\/react['"]/g
+const escapeRe = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
+// Named imports from the library: import { A, B } from 'pkg'.
+const namedImportRe = (pkg: string) => new RegExp(`import\\s*(?:type\\s*)?\\{([^}]*)\\}\\s*from\\s*['"]${escapeRe(pkg)}['"]`, 'g')
+// The ways of importing that would skip the allowlist: a namespace, a default, a path inside the package, require().
+const wholeImportRes = (pkg: string) => {
+  const q = `['"]${escapeRe(pkg)}`
+  return [
+    new RegExp(`import\\s*(?:type\\s*)?\\*\\s*as\\s+\\w+\\s+from\\s*${q}['"]`, 'g'),
+    new RegExp(`import\\s+(?:type\\s+)?\\w+\\s*(?:,\\s*\\{[^}]*\\}\\s*)?from\\s*${q}['"]`, 'g'),
+    new RegExp(`from\\s*${q}/[^'"]*['"]`, 'g'),
+    new RegExp(`require\\(\\s*${q}['"]\\s*\\)`, 'g'),
+  ]
+}
+// Type values set by hand in a stylesheet. Every size, line height, tracking and family comes from a type role, so the whole product
+// can be re-typeset in one place. font-weight is left to the role too but not enforced: most uses are emphasis inside a role.
+const RAW_TYPE_RE = /(?<![\w-])(font-size|line-height|letter-spacing|font-family|font)\s*:\s*([^;}\n]+)/g
+const TYPE_INHERIT_RE = /^(?:inherit|initial|unset|revert|normal)$/
+// Layering: a number in z-index is a guess about every other layer. Layers come from tokens.
+const Z_INDEX_RE = /(?<![\w-])z-index\s*:\s*([^;}\n]+)/g
+const Z_INDEX_OK_RE = /^(?:auto|0|inherit|initial|unset|revert|var\(.*\))$/
+
+// The opening tag of each <Name ...> in JSX, from "<Name" to its closing ">", skipping braces, strings and arrow functions.
+function jsxOpeningTags(code: string, name: string): { text: string; line: number }[] {
+  const out: { text: string; line: number }[] = []
+  for (const m of code.matchAll(new RegExp(`<${name}(?=[\\s/>])`, 'g'))) {
+    const start = m.index ?? 0
+    let depth = 0
+    let quote = ''
+    let i = start + m[0].length
+    for (; i < code.length; i++) {
+      const c = code[i]
+      if (quote) {
+        if (c === quote) quote = ''
+        continue
+      }
+      if (c === '"' || c === "'" || c === '`') quote = c
+      else if (c === '{') depth++
+      else if (c === '}') depth--
+      else if (c === '>' && depth === 0 && code[i - 1] !== '=') break
+    }
+    out.push({ text: code.slice(start, i + 1), line: code.slice(0, start).split('\n').length })
+  }
+  return out
+}
 
 export function validatePage(source: string, options: ValidateOptions = {}): { pass: boolean; violations: Violation[] } {
   const code = stripComments(source)
@@ -133,10 +177,11 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     })
   }
 
+  const pkg = options.importFrom ?? '@carbon/react'
   if (options.allowedComponents) {
     const allowed = new Set(options.allowedComponents)
     const unknown: { text: string; line: number }[] = []
-    for (const m of code.matchAll(CARBON_IMPORT_RE)) {
+    for (const m of code.matchAll(namedImportRe(pkg))) {
       const line = code.slice(0, m.index ?? 0).split('\n').length
       for (const part of m[1].split(',')) {
         const name = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0].trim()
@@ -162,6 +207,45 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
         lines: linesOf(unknown),
       })
     }
+  }
+
+  const whole = wholeImportRes(pkg).flatMap((re) => matchesWithLines(code, re))
+  if (whole.length) {
+    violations.push({
+      rule: 'no-whole-library-import',
+      message: `Found ${whole.length} import(s) of '${pkg}' as a namespace, a default, a path inside the package, or require(). Only named imports are checked against the component allowlist: write import { Button } from '${pkg}'.`,
+      lines: linesOf(whole),
+    })
+  }
+
+  const rawType = matchesWithLines(code, RAW_TYPE_RE).filter((m) => !TYPE_INHERIT_RE.test(m.text.replace(RAW_TYPE_RE, '$2').trim()))
+  if (rawType.length) {
+    violations.push({
+      rule: 'no-raw-type-values',
+      message: `Found ${rawType.length} hand-set type declaration(s) (${[...new Set(rawType.map((t) => t.text.replace(/\s*:.*$/, '')))].join(', ')}). Size, line height, letter spacing and family come from a type role: @include tokens.role('<role>'). If no role fits, add one to the design system rather than overriding it here.`,
+      lines: linesOf(rawType),
+    })
+  }
+
+  const zIndex = matchesWithLines(code, Z_INDEX_RE).filter((m) => !Z_INDEX_OK_RE.test(m.text.replace(Z_INDEX_RE, '$1').trim()))
+  if (zIndex.length) {
+    violations.push({
+      rule: 'no-numeric-z-index',
+      message: `Found ${zIndex.length} numeric z-index value(s). Use a layer token (var(--at-z-raised), --at-z-bar, --at-z-header, --at-z-banner; list_design_tokens, airtable.layer) so stacking is decided in one place.`,
+      lines: linesOf(zIndex),
+    })
+  }
+
+  const iconButtons = [
+    ...jsxOpeningTags(code, 'Button').filter((t) => /\bhasIconOnly\b/.test(t.text) && !/\biconDescription\s*=/.test(t.text)),
+    ...jsxOpeningTags(code, 'IconButton').filter((t) => !/\blabel\s*=/.test(t.text)),
+  ]
+  if (iconButtons.length) {
+    violations.push({
+      rule: 'a11y-icon-button-label',
+      message: `Found ${iconButtons.length} icon-only button(s) with no accessible name. Give a Button with hasIconOnly an iconDescription (an IconButton, a label): it is the only text a screen reader gets.`,
+      lines: linesOf(iconButtons),
+    })
   }
 
   const imgTags = matchesWithLines(code, IMG_RE)

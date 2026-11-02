@@ -2,7 +2,7 @@
 //   npm run check:tokens [path/to/theme.scss] [path/to/tokens.json]
 // Checks that every --at-* token named in the registry exists in theme.scss, and that every exact
 // entry in airtable.fromPrototype maps a hex to a token whose value is that hex (aliases such as
-// var(--at-x) are followed). Every colour token theme.scss defines must also be in the registry. Exits 1 on a mismatch.
+// var(--at-x) are followed). A token defined twice with different values fails. Every colour token theme.scss defines must also be in the registry. Exits 1 on a mismatch.
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
@@ -13,8 +13,15 @@ const registryPath = resolve(process.argv[3] || join(here, '..', 'registry', 'to
 const registry = JSON.parse(readFileSync(registryPath, 'utf8')).airtable
 const scss = readFileSync(themePath, 'utf8').replace(/\/\/.*$/gm, '')
 
+// The last definition wins, as in the cascade. A token defined twice with different values is a mistake: which one a page gets
+// depends on file order, and the registry can only describe one of them.
 const defs = new Map()
-for (const m of scss.matchAll(/(--at-[a-z0-9-]+)\s*:\s*([^;]+);/g)) if (!defs.has(m[1])) defs.set(m[1], m[2].trim())
+const duplicates = []
+for (const m of scss.matchAll(/(--at-[a-z0-9-]+)\s*:\s*([^;]+);/g)) {
+  const value = m[2].trim()
+  if (defs.has(m[1]) && defs.get(m[1]).toLowerCase() !== value.toLowerCase()) duplicates.push(`${m[1]} is defined twice, as ${defs.get(m[1])} and ${value}`)
+  defs.set(m[1], value)
+}
 
 const resolveValue = (token, seen = new Set()) => {
   const v = defs.get(token)
@@ -34,7 +41,7 @@ const walk = (x) => {
 walk(registry)
 for (const [, tok] of Object.entries(registry.pxToSpace.map)) named.add(tok)
 
-const problems = []
+const problems = [...duplicates]
 for (const t of [...named].sort()) if (!defs.has(t)) problems.push(`registry names ${t}, which theme.scss does not define`)
 for (const e of registry.fromPrototype.map) {
   if (!defs.has(e.token)) { problems.push(`fromPrototype ${e.hex} -> ${e.token}: token not defined`); continue }

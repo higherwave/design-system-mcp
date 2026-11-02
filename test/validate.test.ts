@@ -96,7 +96,7 @@ test('GATE: the prototype story card fails, and the hand-built reference passes 
   const proto = validatePage(readFileSync(new URL('./fixtures/prototype-story-card.html', import.meta.url), 'utf8'), { allowedComponents })
   assert.equal(proto.pass, false)
   assert.deepEqual(proto.violations.map((v) => v.rule).sort(), [
-    'a11y-clickable-non-interactive', 'no-design-component-markup', 'no-inline-hex-colors', 'no-inline-style', 'no-raw-html-primitives', 'no-raw-px',
+    'a11y-clickable-non-interactive', 'no-design-component-markup', 'no-inline-hex-colors', 'no-inline-style', 'no-raw-html-primitives', 'no-raw-px', 'no-raw-type-values',
   ].sort())
 
   const tsx = validatePage(readFileSync(new URL('./fixtures/StoryCard.tsx', import.meta.url), 'utf8'), { allowedComponents })
@@ -114,4 +114,46 @@ test('role() must name a type role the mixin knows (only when the roles are supp
   assert.deepEqual(r.violations.map((v) => [v.rule, v.lines]), [['type-role-unknown', [2]]])
   assert.match(r.violations[0].message, /'nope'.*body-md, meta/)
   assert.deepEqual(rules(`.a { @include tokens.role('nope'); }`), [], 'without the roles the check is skipped')
+})
+
+test('hand-set type values are flagged; inherit and normal are fine; line clamping is not a line height', () => {
+  const r = (code: string) => rules(code)
+  assert.deepEqual(r(`.a { font-size: 1.375rem; }`), ['no-raw-type-values'])
+  assert.deepEqual(r(`.a { line-height: 1.55; letter-spacing: 0.08em; font-family: Georgia; }`), ['no-raw-type-values'])
+  assert.deepEqual(r(`.a { font: 500 1rem/1.4 Arial; }`), ['no-raw-type-values'])
+  assert.deepEqual(r(`.a { font-size: inherit; line-height: normal; letter-spacing: normal; -webkit-line-clamp: 2; font-weight: 600; }`), [])
+  assert.deepEqual(r(`.a { @include tokens.role('body-md'); }`), [])
+  assert.deepEqual(validatePage(`.a { font-size: 1rem;\n  line-height: 1.5; }`).violations[0].lines, [1, 2])
+})
+
+test('z-index must come from a layer token', () => {
+  assert.deepEqual(rules(`.a { z-index: 3; }`), ['no-numeric-z-index'])
+  assert.deepEqual(rules(`.a { z-index: -1; }`), ['no-numeric-z-index'])
+  assert.deepEqual(rules(`.a { z-index: var(--at-z-header); } .b { z-index: auto; } .c { z-index: 0; }`), [])
+})
+
+test('an icon-only button needs its accessible name, wherever the attributes sit and whatever the handlers contain', () => {
+  assert.deepEqual(rules(`<Button hasIconOnly renderIcon={Close} onClick={() => go(a > b)} />`), ['a11y-icon-button-label'])
+  assert.deepEqual(rules(`<Button\n  hasIconOnly\n  renderIcon={Close}\n  onClick={() => go()}\n/>`), ['a11y-icon-button-label'])
+  assert.deepEqual(rules(`<Button hasIconOnly iconDescription="Close" onClick={() => go(a > b)} />`), [])
+  assert.deepEqual(rules(`<Button kind="primary">Save</Button>`), [])
+  assert.deepEqual(rules(`<IconButton><Close /></IconButton>`), ['a11y-icon-button-label'])
+  assert.deepEqual(rules(`<IconButton label="Close"><Close /></IconButton>`), [])
+  assert.deepEqual(validatePage(`const a = 1\n<Button hasIconOnly />`).violations[0].lines, [2])
+})
+
+test('the whole library cannot be imported in a way that skips the allowlist; the package is a setting', () => {
+  const allowed = ['Button']
+  const whole = (code: string, importFrom?: string) => validatePage(code, { allowedComponents: allowed, importFrom }).violations.map((v) => v.rule)
+  assert.deepEqual(whole(`import * as C from '@carbon/react'`), ['no-whole-library-import'])
+  assert.deepEqual(whole(`import Carbon from '@carbon/react'`), ['no-whole-library-import'])
+  assert.deepEqual(whole(`import Carbon, { Button } from '@carbon/react'`), ['no-whole-library-import'])
+  assert.deepEqual(whole(`import Button from '@carbon/react/lib/components/Button'`), ['no-whole-library-import'])
+  assert.deepEqual(whole(`const C = require('@carbon/react')`), ['no-whole-library-import'])
+  assert.deepEqual(whole(`import { Button } from '@carbon/react'`), [])
+  assert.deepEqual(whole(`import type { ButtonProps } from '@carbon/react'`), ['component-not-in-allowlist'])
+  // Another design system: its package is checked, and Carbon's is just another module.
+  assert.deepEqual(whole(`import { Button, Tabs } from '@acme/ui'`, '@acme/ui'), ['component-not-in-allowlist'])
+  assert.deepEqual(whole(`import * as UI from '@acme/ui'`, '@acme/ui'), ['no-whole-library-import'])
+  assert.deepEqual(whole(`import * as C from '@carbon/react'`, '@acme/ui'), [])
 })

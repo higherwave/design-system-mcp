@@ -32,3 +32,5 @@ jobs:
           path: app
       - name: Token registry matches the app's theme.scss
         run: node scripts/check-tokens.mjs app/src/theme.scss registry/tokens.json
+      - name: Colour pairs are readable (contrast)
+        run: node scripts/check-contrast.mjs app/src/theme.scss registry/tokens.json
