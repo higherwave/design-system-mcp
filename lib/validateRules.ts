@@ -7,7 +7,8 @@ export type Violation = {
 
 // ---------------------------------------------------------------------------------------------
 // Rules for pages generated from a Design Component prototype (inline styles, raw hex, px) into
-// Carbon + the Airtable layer. Every rule is deterministic: same code in, same result out.
+// a design system. Which design system (its component package, token prefix, type mixin, forbidden elements, restricted components)
+// is a profile, not code: see registry/profile.json and optionsFromProfile below. Every rule is deterministic: same code in, same result out.
 // Known limits are noted next to each pattern; the validator is a guard, not a parser.
 // ---------------------------------------------------------------------------------------------
 
@@ -16,7 +17,9 @@ const HEX_COLOR_RE = /#[0-9a-fA-F]{3,8}\b/g
 const COLOR_FUNCTION_RE = /\b(?:rgba?|hsla?)\(/g
 // No `i` flag: JSX component names are capitalized (<Button>), raw HTML
 // elements are lowercase (<button>) — case must distinguish them.
-const RAW_ELEMENT_RE = /<(button|input|select|textarea|table)[\s>]/g
+const escapeRe = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
+const DEFAULT_RAW_ELEMENTS = ['button', 'input', 'select', 'textarea', 'table']
+const rawElementRe = (elements: string[]) => new RegExp(`<(${elements.map(escapeRe).join('|')})[\\s>]`, 'g')
 const IMG_RE = /<img[\s>][^>]*>/g
 // JSX style={...} and HTML style="..." / style='...'. `style-hover=` does not match: `\bstyle` is
 // followed by `-`, not `=`.
@@ -56,12 +59,59 @@ export type ValidateOptions = {
   typeRoles?: string[]
   /** The component library's package, for the import rules. Default '@carbon/react'; another design system names its own. */
   importFrom?: string
+  /** The design system's token prefix, for the messages. Default '--at-'. */
+  tokenPrefix?: string
+  /** The Sass mixin that applies a type role: role('body-md'). Default 'role'. */
+  typeMixin?: string
+  /** HTML elements that must come from a component instead. Default button, input, select, textarea, table. */
+  rawElements?: string[]
+  /** Components that exist in the library but this product has chosen not to use, each with the reason and what to use instead. */
+  restrictedComponents?: { name: string; reason: string; instead?: string }[]
+  /** Layer token names, for the z-index message. */
+  layerTokens?: string[]
+  /** A name for the design system, for the messages. */
+  designSystem?: string
+  /** Rules a profile switches off. Everything else is on. */
+  rules?: Record<string, 'off' | 'error'>
 }
 
-// role('body-md') or tokens.role("meta") in Sass. A name the mixin does not know compiles to nothing or fails only in the Sass build.
-const TYPE_ROLE_RE = /\brole\(\s*(['"])([^'"]*)\1\s*\)/g
+/** What a design-system profile declares (registry/profile.json). */
+export type Profile = {
+  name: string
+  library: { package: string }
+  tokens: { prefix: string; typeMixin: string; section: string }
+  components?: { restricted?: { name: string; reason: string; instead?: string }[] }
+  rules?: Record<string, 'off' | 'error'>
+}
 
-const escapeRe = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
+/**
+ * The validator's options for a profile, its component list (components.json) and its tokens (tokens.json). `local` is what one app adds on
+ * top: it may restrict more components, never loosen the company profile.
+ */
+export function optionsFromProfile(
+  profile: Profile,
+  components: { allowed: { name: string }[]; disallowed_raw_elements?: string[] },
+  tokens: Record<string, any>,
+  local: { restricted?: { name: string; reason: string; instead?: string }[] } = {},
+): ValidateOptions {
+  const section = tokens[profile.tokens.section] ?? {}
+  return {
+    allowedComponents: components.allowed.map((c) => c.name),
+    typeRoles: (section.type?.roles ?? []).map((r: { token: string }) => r.token),
+    layerTokens: (section.layer ?? []).map((l: { token: string }) => l.token),
+    importFrom: profile.library.package,
+    tokenPrefix: profile.tokens.prefix,
+    typeMixin: profile.tokens.typeMixin,
+    rawElements: components.disallowed_raw_elements,
+    restrictedComponents: [...(profile.components?.restricted ?? []), ...(local.restricted ?? [])],
+    designSystem: profile.name,
+    rules: profile.rules,
+  }
+}
+
+// role('body-md') or tokens.role("meta") in Sass (the mixin's name is the profile's). A name the mixin does not know stops the Sass build, but only after the linter has passed the file.
+const typeRoleRe = (mixin: string) => new RegExp(`\\b${escapeRe(mixin)}\\(\\s*(['"])([^'"]*)\\1\\s*\\)`, 'g')
+
 // Named imports from the library: import { A, B } from 'pkg'.
 const namedImportRe = (pkg: string) => new RegExp(`import\\s*(?:type\\s*)?\\{([^}]*)\\}\\s*from\\s*['"]${escapeRe(pkg)}['"]`, 'g')
 // The ways of importing that would skip the allowlist: a namespace, a default, a path inside the package, require().
@@ -109,12 +159,17 @@ function jsxOpeningTags(code: string, name: string): { text: string; line: numbe
 export function validatePage(source: string, options: ValidateOptions = {}): { pass: boolean; violations: Violation[] } {
   const code = stripComments(source)
   const violations: Violation[] = []
+  const prefix = options.tokenPrefix ?? '--at-'
+  const mixin = options.typeMixin ?? 'role'
+  const system = options.designSystem ?? 'the design system'
+  const pkg = options.importFrom ?? '@carbon/react'
+  const TYPE_ROLE_RE = typeRoleRe(mixin)
 
   const hex = matchesWithLines(code, HEX_COLOR_RE)
   if (hex.length) {
     violations.push({
       rule: 'no-inline-hex-colors',
-      message: `Found ${hex.length} inline hex color(s) (${[...new Set(hex.map((h) => h.text))].join(', ')}). Use a design token instead — see list_design_tokens (Airtable layer: fromPrototype maps each prototype hex to its --at-* token).`,
+      message: `Found ${hex.length} inline hex color(s) (${[...new Set(hex.map((h) => h.text))].join(', ')}). Use a design token instead — see list_design_tokens (fromPrototype in the token registry maps each prototype hex to its ${prefix}* token).`,
       lines: linesOf(hex),
     })
   }
@@ -128,12 +183,12 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     })
   }
 
-  const raw = matchesWithLines(code, RAW_ELEMENT_RE)
+  const raw = matchesWithLines(code, rawElementRe(options.rawElements ?? DEFAULT_RAW_ELEMENTS))
   if (raw.length) {
     const elements = [...new Set(raw.map((m) => m.text.replace(/[<>\s]/g, '').toLowerCase()))]
     violations.push({
       rule: 'no-raw-html-primitives',
-      message: `Found raw HTML element(s) (${elements.join(', ')}) that have Carbon equivalents. Use the corresponding component from list_components instead.`,
+      message: `Found raw HTML element(s) (${elements.join(', ')}) that have components in ${system}. Use the corresponding component from list_components instead.`,
       lines: linesOf(raw),
     })
   }
@@ -142,7 +197,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
   if (style.length) {
     violations.push({
       rule: 'no-inline-style',
-      message: `Found ${style.length} inline style attribute(s). Move styling into a CSS Module that uses var(--at-*) / var(--cds-*) tokens and the role() type mixin; set variants through component props.`,
+      message: `Found ${style.length} inline style attribute(s). Move styling into a CSS Module that uses var(${prefix}*) tokens and the ${mixin}() type mixin; set variants through component props.`,
       lines: linesOf(style),
     })
   }
@@ -154,7 +209,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
   if (px.length) {
     violations.push({
       rule: 'no-raw-px',
-      message: `Found ${px.length} raw px value(s) (${[...new Set(px.map((p) => p.text))].slice(0, 8).join(', ')}). Use --at-space-* for spacing, --at-radius-* for corners, the type role() mixin for text, and rem for other sizes; only 0 and 1px hairlines may stay literal. list_design_tokens has pxToSpace and pxToType maps.`,
+      message: `Found ${px.length} raw px value(s) (${[...new Set(px.map((p) => p.text))].slice(0, 8).join(', ')}). Use ${prefix}space-* for spacing, ${prefix}radius-* for corners, the type ${mixin}() mixin for text, and rem for other sizes; only 0 and 1px hairlines may stay literal. list_design_tokens has pxToSpace and pxToType maps.`,
       lines: linesOf(px),
     })
   }
@@ -177,7 +232,6 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     })
   }
 
-  const pkg = options.importFrom ?? '@carbon/react'
   if (options.allowedComponents) {
     const allowed = new Set(options.allowedComponents)
     const unknown: { text: string; line: number }[] = []
@@ -191,7 +245,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     if (unknown.length) {
       violations.push({
         rule: 'component-not-in-allowlist',
-        message: `Imported ${[...new Set(unknown.map((u) => u.text))].join(', ')} from '@carbon/react', which ${unknown.length > 1 ? 'are' : 'is'} not in the allowed list. Use a component from list_components, or ask for it to be added to registry/components.json.`,
+        message: `Imported ${[...new Set(unknown.map((u) => u.text))].join(', ')} from '${pkg}', which ${unknown.length > 1 ? 'are' : 'is'} not in the allowed list. Use a component from list_components, or ask for it to be added to registry/components.json.`,
         lines: linesOf(unknown),
       })
     }
@@ -203,8 +257,28 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     if (unknown.length) {
       violations.push({
         rule: 'type-role-unknown',
-        message: `role() asks for ${[...new Set(unknown.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')}, which is not a type role. The roles are ${options.typeRoles.join(', ')} (list_design_tokens, airtable.type.roles).`,
+        message: `${mixin}() asks for ${[...new Set(unknown.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')}, which is not a type role. The roles are ${options.typeRoles.join(', ')} (list_design_tokens, airtable.type.roles).`,
         lines: linesOf(unknown),
+      })
+    }
+  }
+
+  if (options.restrictedComponents?.length) {
+    const byName = new Map(options.restrictedComponents.map((r) => [r.name, r]))
+    const used: { text: string; line: number }[] = []
+    for (const m of code.matchAll(namedImportRe(pkg))) {
+      const line = code.slice(0, m.index ?? 0).split('\n').length
+      for (const part of m[1].split(',')) {
+        const name = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0].trim()
+        if (byName.has(name)) used.push({ text: name, line })
+      }
+    }
+    if (used.length) {
+      const names = [...new Set(used.map((u) => u.text))]
+      violations.push({
+        rule: 'component-restricted',
+        message: `${names.join(', ')} ${names.length > 1 ? 'are' : 'is'} in the library but this product does not use ${names.length > 1 ? 'them' : 'it'}: ${names.map((n) => `${n}: ${byName.get(n)!.reason}${byName.get(n)!.instead ? ` Use ${byName.get(n)!.instead} instead.` : ''}`).join(' ')}`,
+        lines: linesOf(used),
       })
     }
   }
@@ -222,7 +296,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
   if (rawType.length) {
     violations.push({
       rule: 'no-raw-type-values',
-      message: `Found ${rawType.length} hand-set type declaration(s) (${[...new Set(rawType.map((t) => t.text.replace(/\s*:.*$/, '')))].join(', ')}). Size, line height, letter spacing and family come from a type role: @include tokens.role('<role>'). If no role fits, add one to the design system rather than overriding it here.`,
+      message: `Found ${rawType.length} hand-set type declaration(s) (${[...new Set(rawType.map((t) => t.text.replace(/\s*:.*$/, '')))].join(', ')}). Size, line height, letter spacing and family come from a type role: @include tokens.${mixin}('<role>'). If no role fits, add one to the design system rather than overriding it here.`,
       lines: linesOf(rawType),
     })
   }
@@ -231,7 +305,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
   if (zIndex.length) {
     violations.push({
       rule: 'no-numeric-z-index',
-      message: `Found ${zIndex.length} numeric z-index value(s). Use a layer token (var(--at-z-raised), --at-z-bar, --at-z-header, --at-z-banner; list_design_tokens, airtable.layer) so stacking is decided in one place.`,
+      message: `Found ${zIndex.length} numeric z-index value(s). Use a layer token (${options.layerTokens?.length ? options.layerTokens.map((t) => `var(${t})`).join(', ') : `a ${prefix}z-* token`}; list_design_tokens) so stacking is decided in one place.`,
       lines: linesOf(zIndex),
     })
   }
@@ -258,5 +332,6 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     })
   }
 
-  return { pass: violations.length === 0, violations }
+  const kept = violations.filter((v) => options.rules?.[v.rule] !== 'off')
+  return { pass: kept.length === 0, violations: kept }
 }

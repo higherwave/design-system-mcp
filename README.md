@@ -34,5 +34,6 @@ it here, then run `rules:sync` in each app and commit the result.
 
     npm run dev            # MCP server on :3000
     npm test               # registry and validator tests
+    # The design system itself is data: registry/profile.json (docs/PROFILE.md)
     npm run check:tokens   # compare tokens.json with an app's theme.scss (also fails on a token defined twice)
     npm run check:contrast # the colour pairs in tokens.json (airtable.contrast) meet WCAG contrast

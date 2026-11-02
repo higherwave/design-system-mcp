@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { createMcpHandler, withMcpAuth } from 'mcp-handler'
 import type { AuthInfo } from '@modelcontextprotocol/server'
-import { loadTokens, loadComponents, searchPatterns, getPattern, type Pattern } from '../../../lib/registry'
-import { validatePage } from '../../../lib/validateRules'
+import { loadTokens, loadComponents, loadProfile, searchPatterns, getPattern, type Pattern } from '../../../lib/registry'
+import { optionsFromProfile, validatePage, type Profile } from '../../../lib/validateRules'
 import { openRegisterPatternPR } from '../../../lib/githubWrite'
 
 export const runtime = 'nodejs'
@@ -13,7 +13,7 @@ const handler = createMcpHandler(
       'list_design_tokens',
       {
         title: 'List design tokens',
-        description: 'Returns Carbon design token categories (color, spacing, typography) and how to consume them.',
+        description: 'Returns the design tokens (color, spacing, typography, layers) and how to consume them.',
       },
       async () => ({
         content: [{ type: 'text', text: JSON.stringify(loadTokens(), null, 2) }],
@@ -21,13 +21,24 @@ const handler = createMcpHandler(
     )
 
     server.registerTool(
+      'get_design_system_profile',
+      {
+        title: 'Get the design-system profile',
+        description: 'Returns the profile that governs this product: which design system (component package, token prefix, type mixin), which components it restricts and why, and which rules are switched off. Read it before generating code.',
+      },
+      async () => ({
+        content: [{ type: 'text', text: JSON.stringify(loadProfile(), null, 2) }],
+      }),
+    )
+
+    server.registerTool(
       'list_components',
       {
         title: 'List components',
-        description: 'Returns the allowed Carbon component list with import paths and usage notes.',
+        description: 'Returns the allowed component list with import paths and usage notes, and the components the profile restricts (with the reason and what to use instead).',
       },
       async () => ({
-        content: [{ type: 'text', text: JSON.stringify(loadComponents(), null, 2) }],
+        content: [{ type: 'text', text: JSON.stringify({ ...(loadComponents() as object), restricted: (loadProfile() as Profile).components?.restricted ?? [] }, null, 2) }],
       }),
     )
 
@@ -71,13 +82,12 @@ const handler = createMcpHandler(
       'validate_page',
       {
         title: 'Validate page',
-        description: 'Deterministically validate generated page code against design-system governance rules (Carbon tokens, allowed components, basic a11y). Call after generating, before committing.',
+        description: 'Deterministically validate generated page code against the product's design-system profile (tokens, allowed and restricted components, type roles, layers, basic a11y). Call after generating, before committing.',
         inputSchema: z.object({ code: z.string() }),
       },
       async ({ code }) => {
-        const components = loadComponents() as { allowed: { name: string }[] }
-        const tokens = loadTokens() as { airtable: { type: { roles: { token: string }[] } } }
-        const result = validatePage(code, { allowedComponents: components.allowed.map((c) => c.name), typeRoles: tokens.airtable.type.roles.map((r) => r.token) })
+        const options = optionsFromProfile(loadProfile() as Profile, loadComponents() as { allowed: { name: string }[]; disallowed_raw_elements?: string[] }, loadTokens() as Record<string, any>)
+        const result = validatePage(code, options)
         return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
       },
     )

@@ -3,23 +3,26 @@
 // The pairs are in the registry (airtable.contrast): text on its background needs 4.5:1 (3:1 for large text and for the borders of
 // controls). A pair marked `known` fails today and is a decision for the design owner; it is listed, not hidden, and it stops
 // failing the check only while it stays marked. Exits 1 on a new failure, or when a `known` pair has since been fixed (remove the mark).
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const themePath = resolve(process.argv[2] || join(here, '..', '..', 'apptest1', 'src', 'theme.scss'))
 const registryPath = resolve(process.argv[3] || join(here, '..', 'registry', 'tokens.json'))
-const pairs = JSON.parse(readFileSync(registryPath, 'utf8')).airtable.contrast ?? []
+const profileFile = join(dirname(registryPath), 'profile.json')
+const profile = existsSync(profileFile) ? JSON.parse(readFileSync(profileFile, 'utf8')) : { tokens: { prefix: '--at-', section: 'airtable' } }
+const TOKEN_RE = `(${profile.tokens.prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[a-z0-9-]+)`
+const pairs = JSON.parse(readFileSync(registryPath, 'utf8'))[profile.tokens.section].contrast ?? []
 const scss = readFileSync(themePath, 'utf8').replace(/\/\/.*$/gm, '')
 
 // The last definition wins, as in the cascade.
 const defs = new Map()
-for (const m of scss.matchAll(/(--at-[a-z0-9-]+)\s*:\s*([^;]+);/g)) defs.set(m[1], m[2].trim())
+for (const m of scss.matchAll(new RegExp(`${TOKEN_RE}\\s*:\\s*([^;]+);`, 'g'))) defs.set(m[1], m[2].trim())
 const hexOf = (token, seen = new Set()) => {
   const v = defs.get(token)
   if (v === undefined || seen.has(token)) return undefined
-  const alias = v.match(/^var\((--at-[a-z0-9-]+)\)$/)
+  const alias = v.match(new RegExp(`^var\\(${TOKEN_RE}\\)$`))
   if (alias) return hexOf(alias[1], new Set([...seen, token]))
   return /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : undefined
 }

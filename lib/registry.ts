@@ -20,6 +20,10 @@ export function loadTokens(): unknown {
   return JSON.parse(fs.readFileSync(path.join(REGISTRY_ROOT, 'tokens.json'), 'utf-8'))
 }
 
+export function loadProfile(): unknown {
+  return JSON.parse(fs.readFileSync(path.join(REGISTRY_ROOT, 'profile.json'), 'utf-8'))
+}
+
 export function loadComponents(): unknown {
   return JSON.parse(fs.readFileSync(path.join(REGISTRY_ROOT, 'components.json'), 'utf-8'))
 }

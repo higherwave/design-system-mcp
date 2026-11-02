@@ -1,0 +1,19 @@
+{
+  "profile": 1,
+  "name": "Carbon with the Airtable layer (Signal Flow)",
+  "owner": "Higherwave",
+  "description": "The design system this product is governed by. The rules engine reads everything it needs to know about a design system from this file, components.json and tokens.json; nothing about Carbon or the Airtable layer is built into the engine.",
+  "library": {
+    "package": "@carbon/react",
+    "icons": "@carbon/icons-react"
+  },
+  "tokens": {
+    "prefix": "--at-",
+    "typeMixin": "role",
+    "section": "airtable"
+  },
+  "components": {
+    "restricted": []
+  },
+  "rules": {}
+}

@@ -77,7 +77,8 @@
     },
     {
       "name": "Tabs",
-      "import": "@carbon/react"
+      "import": "@carbon/react",
+      "notes": "Use with TabList, Tab, TabPanels and TabPanel."
     },
     {
       "name": "Breadcrumb",
@@ -176,6 +177,72 @@
       "name": "SkeletonPlaceholder",
       "import": "@carbon/react",
       "notes": "Placeholder block for an image or card while it loads."
+    },
+    {
+      "name": "TabList",
+      "import": "@carbon/react",
+      "notes": "Holds the Tab buttons: <Tabs><TabList aria-label=\"...\"><Tab>One</Tab></TabList><TabPanels><TabPanel>...</TabPanel></TabPanels></Tabs>. Use for views of the same content; use SideNav or routes for different pages."
+    },
+    {
+      "name": "Tab",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TabPanels",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TabPanel",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Table",
+      "import": "@carbon/react",
+      "notes": "The table itself, inside TableContainer. Use for tabular data; never a raw <table>. DataTable supplies sorting, selection and expansion state."
+    },
+    {
+      "name": "TableContainer",
+      "import": "@carbon/react",
+      "notes": "Gives the table a title, description and toolbar slot."
+    },
+    {
+      "name": "TableHead",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TableHeader",
+      "import": "@carbon/react",
+      "notes": "A column header; pass isSortable and onClick for sorting."
+    },
+    {
+      "name": "TableRow",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TableBody",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TableCell",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TableToolbar",
+      "import": "@carbon/react",
+      "notes": "Search and actions above a table."
+    },
+    {
+      "name": "TableToolbarContent",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "TableToolbarSearch",
+      "import": "@carbon/react"
+    },
+    {
+      "name": "Switch",
+      "import": "@carbon/react",
+      "notes": "The options inside ContentSwitcher."
     }
   ],
   "disallowed_raw_elements": [
