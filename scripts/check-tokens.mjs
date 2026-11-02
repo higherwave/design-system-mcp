@@ -1,5 +1,5 @@
 // Keeps registry/tokens.json in step with the stylesheet that defines the tokens.
-//   npm run check:tokens [path/to/theme.scss]
+//   npm run check:tokens [path/to/theme.scss] [path/to/tokens.json]
 // Checks that every --at-* token named in the registry exists in theme.scss, and that every exact
 // entry in airtable.fromPrototype maps a hex to a token whose value is that hex (aliases such as
 // var(--at-x) are followed). Exits 1 on a mismatch.
@@ -9,7 +9,8 @@ import { dirname, join, resolve } from 'node:path'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const themePath = resolve(process.argv[2] || join(here, '..', '..', 'apptest1', 'src', 'theme.scss'))
-const registry = JSON.parse(readFileSync(join(here, '..', 'registry', 'tokens.json'), 'utf8')).airtable
+const registryPath = resolve(process.argv[3] || join(here, '..', 'registry', 'tokens.json'))
+const registry = JSON.parse(readFileSync(registryPath, 'utf8')).airtable
 const scss = readFileSync(themePath, 'utf8').replace(/\/\/.*$/gm, '')
 
 const defs = new Map()

@@ -14,7 +14,7 @@ lives in `registry/` (data), so a company forks this repo and replaces that data
 | `lib/validateRules.ts` | The validator (`validatePage`). Self-contained: no imports, so apps can copy it (see below) |
 | `app/api/mcp/route.ts` | The MCP endpoint (bearer-token protected) with its tools |
 | `lib/githubWrite.ts`, `lib/repoSettings.ts` | `register_pattern`: opens a pull request that adds a pattern file |
-| `scripts/check-tokens.mjs` | Checks `tokens.json` against an app's `theme.scss` |
+| `scripts/check-tokens.mjs` | Checks `tokens.json` against an app's `theme.scss`: `node scripts/check-tokens.mjs <theme.scss> [tokens.json]` |
 
 ## Settings (Vercel environment variables)
 
@@ -27,7 +27,7 @@ lives in `registry/` (data), so a company forks this repo and replaces that data
 ## Using the validator from an app
 
 An app does not need a checkout of this repo. It keeps a pinned copy of `lib/validateRules.ts` and `registry/components.json`
-under `vendor/design-rules/` and refreshes it with its `rules:sync` script (see the app's README). To publish a new rule, merge
+under `vendor/design-rules/` (with `registry/tokens.json` and `scripts/check-tokens.mjs`, so the token drift check runs there too) and refreshes it with its `rules:sync` script (see the app's README). To publish a new rule, merge
 it here, then run `rules:sync` in each app and commit the result.
 
 ## Commands
