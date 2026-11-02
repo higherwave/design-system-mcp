@@ -1,8 +1,7 @@
 import { Octokit } from '@octokit/rest'
 import type { Pattern } from './registry'
-
-const OWNER = 'higherwave'
-const REPO = 'design-system-mcp'
+import { resolveRepo } from './repoSettings'
+import pkg from '../package.json'
 
 export async function openRegisterPatternPR(
   pattern: Pattern,
@@ -12,6 +11,7 @@ export async function openRegisterPatternPR(
     throw new Error('GITHUB_TOKEN is not configured on the server')
   }
   const octokit = new Octokit({ auth: token })
+  const { owner: OWNER, repo: REPO } = resolveRepo(process.env, pkg.repository)
 
   const { data: repo } = await octokit.repos.get({ owner: OWNER, repo: REPO })
   const defaultBranch = repo.default_branch
