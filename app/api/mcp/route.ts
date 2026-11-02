@@ -82,7 +82,7 @@ const handler = createMcpHandler(
       'validate_page',
       {
         title: 'Validate page',
-        description: 'Deterministically validate generated page code against the product's design-system profile (tokens, allowed and restricted components, type roles, layers, basic a11y). Call after generating, before committing.',
+        description: 'Deterministically validate generated page code against this product’s design-system profile (tokens, allowed and restricted components, type roles, layers, basic a11y). Call after generating, before committing.',
         inputSchema: z.object({ code: z.string() }),
       },
       async ({ code }) => {
