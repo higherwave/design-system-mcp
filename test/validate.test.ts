@@ -132,6 +132,15 @@ test('z-index must come from a layer token', () => {
   assert.deepEqual(rules(`.a { z-index: var(--at-z-header); } .b { z-index: auto; } .c { z-index: 0; }`), [])
 })
 
+test('a panel fixed to the right edge by hand is refused; the Modal container the right-panel pattern styles is not', () => {
+  assert.deepEqual(rules(`.drawer { position: fixed; inset-block: 0; inset-inline-end: 0; }`), ['no-hand-rolled-side-panel'])
+  assert.deepEqual(rules(`.drawer { position: fixed; top: 0; right: 0; }`), ['no-hand-rolled-side-panel'])
+  assert.deepEqual(rules(`.panel { :global(.cds--modal-container) { position: fixed; inset-inline-end: 0; } }`), [])
+  assert.deepEqual(rules(`.toast { position: fixed; inset-inline-end: 1rem; } .row { position: relative; right: 0; }`), [])
+  assert.equal(validatePage(`a {}\n.drawer { position: fixed; right: 0; }`).violations[0].lines[0], 2)
+  assert.deepEqual(validatePage(`.drawer { position: fixed; right: 0; }`, { rules: { 'no-hand-rolled-side-panel': 'off' } }).violations, [])
+})
+
 test('an icon-only button needs its accessible name, wherever the attributes sit and whatever the handlers contain', () => {
   assert.deepEqual(rules(`<Button hasIconOnly renderIcon={Close} onClick={() => go(a > b)} />`), ['a11y-icon-button-label'])
   assert.deepEqual(rules(`<Button\n  hasIconOnly\n  renderIcon={Close}\n  onClick={() => go()}\n/>`), ['a11y-icon-button-label'])

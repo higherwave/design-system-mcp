@@ -1,0 +1,26 @@
+{
+  "id": "signal-flow-right-panel",
+  "tags": [
+    "panel",
+    "right panel",
+    "side panel",
+    "drawer",
+    "slide-in",
+    "context",
+    "modal",
+    "choose",
+    "assign"
+  ],
+  "pageType": "component",
+  "componentsUsed": [
+    "Modal",
+    "Search",
+    "Button"
+  ],
+  "sourceRepo": "higherwave/apptest1",
+  "sourcePath": "src/components/RightPanel.tsx",
+  "sourceUrl": "https://github.com/higherwave/apptest1/blob/main/src/components/RightPanel.tsx",
+  "liveUrl": null,
+  "description": "The right panel: a panel that slides in from the right edge and leaves the page visible behind it, so people stay oriented in the context they are working in. Use it to choose from a list that is too long for an inline control (assign a theme to a feature area), or to review details beside the page. Built as a passive Carbon Modal laid out at the right edge, so the scrim, focus trap, Escape and the return of focus are Carbon's. Rules: one at a time; opened by a button that says what it does; a choice made in it applies at once and closes it; a heading that names the task and a label that names the thing it is about; never position a drawer by hand (the linter refuses it).",
+  "snippet": "<RightPanel open={open} heading=\"Add to Feature Area\" label={theme.title} onClose={() => setOpen(false)}>\n  <Search size=\"md\" labelText=\"Search feature areas\" value={query} onChange={(e) => setQuery(e.target.value)} />\n  <Button kind=\"ghost\" size=\"md\" onClick={() => choose(area.id)}>{area.name}</Button>\n</RightPanel>"
+}

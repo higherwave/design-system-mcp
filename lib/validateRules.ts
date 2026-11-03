@@ -132,6 +132,22 @@ const TYPE_INHERIT_RE = /^(?:inherit|initial|unset|revert|normal)$/
 const Z_INDEX_RE = /(?<![\w-])z-index\s*:\s*([^;}\n]+)/g
 const Z_INDEX_OK_RE = /^(?:auto|0|inherit|initial|unset|revert|var\(.*\))$/
 
+// A panel docked to the right edge keeps people in the page they are on. There is one way to build it (the right-panel pattern: a passive
+// Modal laid out at the right edge), so a hand-positioned fixed element on that edge is flagged. The Modal's own container is the exception.
+const BLOCK_RE = /([^{}]+)\{([^{}]*)\}/g
+const FIXED_RE = /(?<![\w-])position\s*:\s*fixed\b/
+const RIGHT_EDGE_RE = /(?<![\w-])(?:inset-inline-end|right)\s*:\s*0(?:rem|px)?\s*(?:;|$)/m
+function handRolledPanels(code: string): { text: string; line: number }[] {
+  const out: { text: string; line: number }[] = []
+  for (const m of code.matchAll(BLOCK_RE)) {
+    const [, selector, body] = m
+    if (/cds--modal/.test(selector) || !FIXED_RE.test(body) || !RIGHT_EDGE_RE.test(body)) continue
+    const at = (m.index ?? 0) + m[0].indexOf(selector.trim())
+    out.push({ text: selector.trim(), line: code.slice(0, at).split('\n').length })
+  }
+  return out
+}
+
 // The opening tag of each <Name ...> in JSX, from "<Name" to its closing ">", skipping braces, strings and arrow functions.
 function jsxOpeningTags(code: string, name: string): { text: string; line: number }[] {
   const out: { text: string; line: number }[] = []
@@ -307,6 +323,15 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
       rule: 'no-numeric-z-index',
       message: `Found ${zIndex.length} numeric z-index value(s). Use a layer token (${options.layerTokens?.length ? options.layerTokens.map((t) => `var(${t})`).join(', ') : `a ${prefix}z-* token`}; list_design_tokens) so stacking is decided in one place.`,
       lines: linesOf(zIndex),
+    })
+  }
+
+  const panels = handRolledPanels(code)
+  if (panels.length) {
+    violations.push({
+      rule: 'no-hand-rolled-side-panel',
+      message: `Found ${panels.length} element(s) fixed to the right edge by hand (${panels.map((p) => p.text).join(', ')}). A panel that slides in from the right is the right-panel pattern: use the app's RightPanel (search_patterns "right panel") so every one opens, closes and traps focus the same way.`,
+      lines: linesOf(panels),
     })
   }
 

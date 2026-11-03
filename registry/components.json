@@ -69,7 +69,8 @@
     },
     {
       "name": "Modal",
-      "import": "@carbon/react"
+      "import": "@carbon/react",
+      "notes": "A dialog. Also the right panel: a passive Modal laid out at the right edge, for keeping people in context while they choose or review (see the pattern signal-flow-right-panel and the app's RightPanel). Do not position a drawer by hand."
     },
     {
       "name": "Tag",
