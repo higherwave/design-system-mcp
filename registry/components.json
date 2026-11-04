@@ -140,6 +140,16 @@
       "notes": "An entry in OverflowMenu."
     },
     {
+      "name": "Popover",
+      "import": "@carbon/react",
+      "notes": "A small floating panel anchored to the control that opens it (the account panel in the app header). Use PopoverContent for the panel itself. For a docked side panel use Modal instead."
+    },
+    {
+      "name": "PopoverContent",
+      "import": "@carbon/react",
+      "notes": "The floating panel inside Popover."
+    },
+    {
       "name": "SideNav",
       "import": "@carbon/react",
       "notes": "Project step menu and the left rail. Use SideNavItems and SideNavLink; mark the current step with isActive."
