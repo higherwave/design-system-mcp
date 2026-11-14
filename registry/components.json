@@ -256,6 +256,11 @@
       "notes": "The options inside ContentSwitcher."
     },
     {
+      "name": "Toggle",
+      "import": "@carbon/react",
+      "notes": "A single on/off setting that takes effect at once (for example a person marked away), shown as a switch. Use Checkbox for a choice that is saved with a form. Give it a labelText naming what it changes (with hideLabel when a column heading already says it) so it is announced; style it only with the --at-toggle-* tokens."
+    },
+    {
       "name": "ComboBox",
       "import": "@carbon/react",
       "notes": "A searchable single choice from a longer list (about ten or more): type to filter, pick one. Use Dropdown for short lists."
