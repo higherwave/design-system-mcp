@@ -50,6 +50,11 @@
       "notes": "Use instead of a raw <select>."
     },
     {
+      "name": "SelectItem",
+      "import": "@carbon/react",
+      "notes": "The options inside Select."
+    },
+    {
       "name": "Dropdown",
       "import": "@carbon/react",
       "notes": "Use for single-select menus over a raw <select> when Carbon's styled list behavior is wanted."
