@@ -101,3 +101,13 @@ test('the token and contrast scripts follow the profile’s prefix and section',
   writeFileSync(theme, ':root { --acme-ink: #cccccc; --acme-paper: #ffffff; --acme-layer-top: 100; }')
   assert.throws(() => run('check-contrast.mjs'), (e: any) => /--acme-ink on --acme-paper/.test(e.stderr))
 })
+
+// Decided 2026-11-18 (David): Signal Flow allows Tabs, Table and Switch (the library's own; never a raw <table>). Changing this is a decision, not a cleanup.
+test('Signal Flow allows Tabs, Table and Switch', () => {
+  const restricted = new Set((profile.components?.restricted ?? []).map((r) => r.name))
+  for (const name of ['Tabs', 'Table', 'Switch']) {
+    assert.ok(components.allowed.some((c: { name: string }) => c.name === name), `${name} is in the component list`)
+    assert.ok(!restricted.has(name), `${name} is not restricted`)
+    assert.equal(validatePage(`import { ${name} } from '@carbon/react'`, optionsFromProfile(profile, components, tokens)).pass, true)
+  }
+})
