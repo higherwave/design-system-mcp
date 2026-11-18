@@ -124,6 +124,7 @@ const wholeImportRes = (pkg: string) => {
     new RegExp(`require\\(\\s*${q}['"]\\s*\\)`, 'g'),
   ]
 }
+const HEADING_SIZED = new Set(['display-xl', 'display-lg', 'display-md', 'display-sm', 'title-lg', 'title-md', 'title-sm', 'panel-title'])
 // Type values set by hand in a stylesheet. Every size, line height, tracking and family comes from a type role, so the whole product
 // can be re-typeset in one place. font-weight is left to the role too but not enforced: most uses are emphasis inside a role.
 const RAW_TYPE_RE = /(?<![\w-])(font-size|line-height|letter-spacing|font-family|font)\s*:\s*([^;}\n]+)/g
@@ -275,6 +276,21 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
         rule: 'type-role-unknown',
         message: `${mixin}() asks for ${[...new Set(unknown.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')}, which is not a type role. The roles are ${options.typeRoles.join(', ')} (list_design_tokens, airtable.type.roles).`,
         lines: linesOf(unknown),
+      })
+    }
+  }
+
+  // The heading ladder: a heading takes heading-1 to heading-4, so one change to a level reaches every heading. The sized roles the ladder stands on
+  // (display-*, title-*, panel-title) are for what is not a heading (a large number, a brand name) and say so on the line: `// not-a-heading: why`.
+  // A whole file outside the hierarchy (storyboard slides) says `// not-a-heading-file: why`. Only checked where the design system has the ladder.
+  if (options.typeRoles?.includes('heading-1') && !/\/\/\s*not-a-heading-file:/.test(source)) {
+    const lines = source.split('\n')
+    const sized = matchesWithLines(code, TYPE_ROLE_RE).filter((m) => HEADING_SIZED.has(m.text.replace(TYPE_ROLE_RE, '$2')) && !/\/\/\s*not-a-heading:/.test(`${lines[m.line - 2] ?? ''}\n${lines[m.line - 1] ?? ''}`))
+    if (sized.length) {
+      violations.push({
+        rule: 'heading-roles',
+        message: `${[...new Set(sized.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')} sets a heading's size by hand. Headings use heading-1 (page title), heading-2 (detail pane), heading-3 (card or item title) or heading-4, so a level changes everywhere at once. If this is not a heading (a large number, a brand name), say so with a comment on or above the line: // not-a-heading: <why>.`,
+        lines: linesOf(sized),
       })
     }
   }

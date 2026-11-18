@@ -132,6 +132,19 @@ test('z-index must come from a layer token', () => {
   assert.deepEqual(rules(`.a { z-index: var(--at-z-header); } .b { z-index: auto; } .c { z-index: 0; }`), [])
 })
 
+test('headings use the ladder; the sized roles need a note saying the text is not a heading', () => {
+  const ladder = { typeRoles: ['heading-1', 'heading-3', 'title-md', 'display-sm', 'panel-title'] }
+  const run = (css: string, o: object = ladder) => validatePage(css, o).violations.map((v) => v.rule)
+  assert.deepEqual(run(`.a { @include tokens.role('title-md'); }`), ['heading-roles'])
+  assert.deepEqual(run(`.a { @include tokens.role('panel-title'); }`), ['heading-roles'])
+  assert.deepEqual(run(`.a { @include tokens.role('heading-3'); }`), [])
+  assert.deepEqual(run(`.a { @include tokens.role('display-sm'); // not-a-heading: a large number\n}`), [])
+  assert.deepEqual(run(`// not-a-heading: a large number\n.a { @include tokens.role('display-sm'); }`), [])
+  assert.deepEqual(run(`// not-a-heading-file: slides\n.a { @include tokens.role('title-md'); }`), [])
+  assert.deepEqual(run(`.a { @include tokens.role('title-md'); }`, { typeRoles: ['title-md'] }), [])
+  assert.deepEqual(run(`.a { @include tokens.role('title-md'); }`, { ...ladder, rules: { 'heading-roles': 'off' } }), [])
+})
+
 test('a panel fixed to the right edge by hand is refused; the Modal container the right-panel pattern styles is not', () => {
   assert.deepEqual(rules(`.drawer { position: fixed; inset-block: 0; inset-inline-end: 0; }`), ['no-hand-rolled-side-panel'])
   assert.deepEqual(rules(`.drawer { position: fixed; top: 0; right: 0; }`), ['no-hand-rolled-side-panel'])
