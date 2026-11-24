@@ -133,11 +133,12 @@ test('z-index must come from a layer token', () => {
 })
 
 test('headings use the ladder; the sized roles need a note saying the text is not a heading', () => {
-  const ladder = { typeRoles: ['heading-1', 'heading-3', 'title-md', 'display-sm', 'panel-title'] }
+  const ladder = { typeRoles: ['heading-1', 'heading-3', 'heading-section', 'title-md', 'display-sm', 'panel-title'] }
   const run = (css: string, o: object = ladder) => validatePage(css, o).violations.map((v) => v.rule)
   assert.deepEqual(run(`.a { @include tokens.role('title-md'); }`), ['heading-roles'])
   assert.deepEqual(run(`.a { @include tokens.role('panel-title'); }`), ['heading-roles'])
   assert.deepEqual(run(`.a { @include tokens.role('heading-3'); }`), [])
+  assert.deepEqual(run(`.a { @include tokens.role('heading-section'); }`), [])
   assert.deepEqual(run(`.a { @include tokens.role('display-sm'); // not-a-heading: a large number\n}`), [])
   assert.deepEqual(run(`// not-a-heading: a large number\n.a { @include tokens.role('display-sm'); }`), [])
   assert.deepEqual(run(`// not-a-heading-file: slides\n.a { @include tokens.role('title-md'); }`), [])

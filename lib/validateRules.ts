@@ -289,7 +289,7 @@ export function validatePage(source: string, options: ValidateOptions = {}): { p
     if (sized.length) {
       violations.push({
         rule: 'heading-roles',
-        message: `${[...new Set(sized.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')} sets a heading's size by hand. Headings use heading-1 (page title), heading-2 (detail pane), heading-3 (card or item title) or heading-4, so a level changes everywhere at once. If this is not a heading (a large number, a brand name), say so with a comment on or above the line: // not-a-heading: <why>.`,
+        message: `${[...new Set(sized.map((u) => u.text.replace(TYPE_ROLE_RE, '$2')))].map((n) => `'${n}'`).join(', ')} sets a heading's size by hand. Headings use heading-1 (page title), heading-2 (detail pane), heading-section (a section or table heading), heading-3 (card or item title) or heading-4, so a level changes everywhere at once. If this is not a heading (a large number, a brand name), say so with a comment on or above the line: // not-a-heading: <why>.`,
         lines: linesOf(sized),
       })
     }
